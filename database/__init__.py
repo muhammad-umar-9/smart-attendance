@@ -1,0 +1,1 @@
+"""Database layer package for Smart Attendance System."""
