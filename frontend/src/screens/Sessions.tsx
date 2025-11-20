@@ -14,7 +14,8 @@ export default function SessionsScreen() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await client.get('/attendance/sessions', { params: { course_id: courseId } });
+        const params = courseId ? { course_id: courseId } : undefined;
+        const res = await client.get('/attendance/sessions', { params });
         setSessions(res.data || []);
       } catch (err) {
         // ignore for now
@@ -22,7 +23,7 @@ export default function SessionsScreen() {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [courseId]);
 
   if (loading) return <ActivityIndicator style={{ flex: 1 }} />;
 
@@ -32,7 +33,14 @@ export default function SessionsScreen() {
         data={sessions}
         keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => navigation.navigate('SessionDetails' as never, { sessionId: item.id } as never)}>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate(
+                  'SessionDetails' as never,
+                  { sessionId: item.id, courseId: item.course_id } as never,
+                )
+              }
+            >
               <View style={styles.item}>
                 <Text style={styles.title}>Course ID: {item.course_id}</Text>
                 <Text style={styles.meta}>Date: {item.session_date}</Text>

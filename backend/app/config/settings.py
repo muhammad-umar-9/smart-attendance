@@ -29,6 +29,8 @@ class Settings(BaseSettings):
     cors_origins: List[str] = Field(default_factory=lambda: ["http://localhost:19006", "http://localhost:8081", "*"])
     face_model_path: Path = Field(default=APP_DIR / "ml" / "model" / "face_recognition.bin")
     face_match_threshold: float = Field(default=0.65)
+    media_root: Path = Field(default=BASE_DIR / "storage" / "media")
+    media_url: str = Field(default="/media")
 
 
 @lru_cache

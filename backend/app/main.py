@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
@@ -24,6 +25,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+settings.media_root.mkdir(parents=True, exist_ok=True)
+app.mount(settings.media_url, StaticFiles(directory=settings.media_root, check_dir=True), name="media")
 
 app.include_router(api_router)
 
