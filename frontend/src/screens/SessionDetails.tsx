@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ActivityIndicator, FlatList, Alert } from 'react-native';
 import { Check, X, Clock } from 'lucide-react-native';
 import client from '../api/client';
 import { API_BASE_URL } from '../config';
@@ -33,6 +33,10 @@ export default function SessionDetails({ route }: any) {
     }
   }, [sessionId]);
 
+  useEffect(() => {
+    fetchRecords();
+  }, [fetchRecords]);
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -61,8 +65,52 @@ export default function SessionDetails({ route }: any) {
   const absentCount = records.filter(r => r.status.toLowerCase() === 'absent').length;
   const lateCount = records.filter(r => r.status.toLowerCase() === 'late').length;
 
+  useEffect(() => {
+    fetchRecords();
+  }, [fetchRecords]);
+
+  const handleUpload = useCallback(async () => {
+    if (!sessionId || !courseId) {
+      Alert.alert('Missing context', 'Course and session info are required to attach a snapshot.');
+      return;
+    }
+    try {
+      setUploading(true);
+      const permission = await ImagePicker.requestCameraPermissionsAsync();
+      if (permission.status !== 'granted') {
+        Alert.alert('Permission needed', 'Camera access is required to capture attendance images.');
+        return;
+      }
+      const result = await ImagePicker.launchCameraAsync({ allowsEditing: false, quality: 0.7 });
+      if (result.canceled || !result.assets?.length) {
+        return;
+      }
+      const asset = result.assets[0];
+      const formData = new FormData();
+      formData.append('course_id', String(courseId));
+      formData.append('session_id', String(sessionId));
+      formData.append('notes', 'Manual snapshot');
+      formData.append('image_file', {
+        uri: asset.uri,
+        name: asset.fileName ?? `snapshot-${Date.now()}.jpg`,
+        type: asset.mimeType ?? 'image/jpeg',
+      } as any);
+
+      await client.post('/attendance/mark-face', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      await fetchRecords();
+    } catch (err) {
+      Alert.alert('Upload failed', 'Could not upload the snapshot. Please try again.');
+    } finally {
+      setUploading(false);
+    }
+  }, [courseId, sessionId, fetchRecords]);
+
   return (
     <View style={styles.container}>
+      
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Attendance Records</Text>
         <Text style={styles.headerSubtitle}>{records.length} students</Text>

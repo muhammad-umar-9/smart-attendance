@@ -5,7 +5,7 @@ import { Calendar, FileText, ChevronRight } from 'lucide-react-native';
 import client from '../api/client';
 
 export default function SessionsScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const route = useRoute();
   const { courseId } = (route.params || {}) as any;
 
@@ -56,7 +56,12 @@ export default function SessionsScreen() {
         renderItem={({ item }) => (
           <TouchableOpacity
             activeOpacity={0.7}
-            onPress={() => navigation.navigate('SessionDetails' as never, { sessionId: item.id, courseId: item.course_id } as never)}
+            onPress={() =>
+              navigation.navigate(
+                'SessionDetails' as never,
+                { sessionId: item.id, courseId: item.course_id } as never,
+              )
+            }
           >
             <View style={styles.card}>
               <View style={styles.cardHeader}>
