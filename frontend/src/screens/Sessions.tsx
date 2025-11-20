@@ -56,7 +56,7 @@ export default function SessionsScreen() {
         renderItem={({ item }) => (
           <TouchableOpacity
             activeOpacity={0.7}
-            onPress={() => navigation.navigate('SessionDetails' as never, { sessionId: item.id } as never)}
+            onPress={() => navigation.navigate('SessionDetails' as never, { sessionId: item.id, courseId: item.course_id } as never)}
           >
             <View style={styles.card}>
               <View style={styles.cardHeader}>
