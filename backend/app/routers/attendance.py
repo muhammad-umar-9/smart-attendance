@@ -19,6 +19,7 @@ from app.schemas import (
 from app.services import attendance_service
 from app.services.ml_integration import identify_from_inputs
 from app.utils.dependencies import get_current_teacher
+from app.utils.file_storage import save_snapshot
 
 router = APIRouter(prefix="/attendance", tags=["attendance"])
 
@@ -96,6 +97,9 @@ async def mark_face_attendance(
 ):
     identify_request = IdentifyRequest(image_base64=payload.image_base64)
     identification = await identify_from_inputs(identify_request, image_file)
+    snapshot_url = None
+    if image_file is not None:
+        snapshot_url = save_snapshot(payload.course_id, image_file, payload.session_id)
     record = attendance_service.mark_face_attendance(
         db=db,
         course_id=payload.course_id,
@@ -103,5 +107,6 @@ async def mark_face_attendance(
         confidence=identification.confidence,
         session_id=payload.session_id,
         notes=payload.notes,
+        snapshot_url=snapshot_url,
     )
     return record

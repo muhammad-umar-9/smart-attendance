@@ -2,23 +2,35 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, FlatList } from 'react-native';
 import { Check, X, Clock } from 'lucide-react-native';
 import client from '../api/client';
+import { API_BASE_URL } from '../config';
 
 export default function SessionDetails({ route }: any) {
-  const { sessionId } = route.params || {};
+  const { sessionId, courseId } = route.params || {};
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
   const [records, setRecords] = useState<any[]>([]);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await client.get(`/attendance/records`, { params: { session_id: sessionId } });
-        setRecords(res.data || []);
-      } catch (err) {
-        // ignore
-      } finally {
-        setLoading(false);
-      }
-    })();
+  const resolveSnapshotUrl = (path?: string | null) => {
+    if (!path) return null;
+    if (path.startsWith('http')) return path;
+    return `${API_BASE_URL}${path}`;
+  };
+
+  const fetchRecords = useCallback(async () => {
+    if (!sessionId) {
+      setRecords([]);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await client.get(`/attendance/records`, { params: { session_id: sessionId } });
+      setRecords(res.data || []);
+    } catch (err) {
+      Alert.alert('Error', 'Unable to load records.');
+    } finally {
+      setLoading(false);
+    }
   }, [sessionId]);
 
   if (loading) {

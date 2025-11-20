@@ -15,7 +15,8 @@ export default function SessionsScreen() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await client.get('/attendance/sessions', { params: { course_id: courseId } });
+        const params = courseId ? { course_id: courseId } : undefined;
+        const res = await client.get('/attendance/sessions', { params });
         setSessions(res.data || []);
       } catch (err) {
         // ignore for now
@@ -23,7 +24,7 @@ export default function SessionsScreen() {
         setLoading(false);
       }
     })();
-  }, []);
+  }, [courseId]);
 
   if (loading) {
     return (
