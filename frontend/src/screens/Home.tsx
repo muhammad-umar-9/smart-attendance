@@ -13,11 +13,15 @@ export default function HomeScreen({ navigation }: any) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-        <View style={styles.container}>
+      <ImageBackground 
+        source={require('../../assets/bg.png')} 
+        style={styles.backgroundImage}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+          <View style={styles.container}>
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>Attendance</Text>
+            <Text style={styles.title}>Smart Attendance</Text>
           </View>
 
           {/* Logo */}
@@ -59,7 +63,8 @@ export default function HomeScreen({ navigation }: any) {
             <Text style={styles.signOutButtonText}>Sign Out</Text>
           </TouchableOpacity>
         </View>
-      </ScrollView>
+        </ScrollView>
+      </ImageBackground>
     </SafeAreaView>
   );
 }
@@ -71,6 +76,9 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
+  },
+  backgroundImage: {
+    flex: 1,
   },
   container: {
     flex: 1,
@@ -105,21 +113,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#2563eb',
-    borderRadius: 14,
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    gap: 12,
+    backgroundColor: '#f3f4f6',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    gap: 10,
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '700',
-    color: '#ffffff',
+    color: '#1a3a3a',
   },
   signOutButton: {
     flexDirection: 'row',
